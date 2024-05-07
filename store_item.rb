@@ -5,26 +5,38 @@
 # C.3 - Be sure to use symbols for the keys. Try creating hashes using both types of hash symbol syntaxes. (Ruby syntax {:a => 123} vs. “JavaScript” syntax {a: 123}).
 
 
+# Rewrite your store items using a class instead of a hash.
+# a) Choose which attributes should have “reader” methods and which attributes should have “writer” methods.
+# b) Create an instance from your store item class. Use puts statements to print the 3 attributes individually to the terminal.
+# c) Use the attr_writer method to change a value
+
+
+class Item
+  attr_writer :price, :sale
+  attr_reader :name, :price, :color, :sale
+
+  def initialize(name, color, price, sale: 0)
+    @name, @price, @color, @sale = name, price, color, sale
+  end
+end
+
+
 class Store
   def initialize
     @items = []
   end
 
   def add(item)
-    @items.push(item)
+    @items.push(Item.new(*item.values))
   end
 
   def display
     puts "Items:"
     i = 1
     for item in @items
-      line = "#{i} | #{item[:name]} (#{item[:color]}) -- $#{item[:price].round(2)}"
-
-      sale = item[:sale]
-      if sale 
-        if sale != 0
-          line += " (#{sale * 100}% off!)"
-        end
+      line = "#{i} | #{item.name} (#{item.color}) -- $#{item.price.round(2)}"
+      if item.sale > 0
+        line += " (#{(item.sale * 100).to_i}% off!)"
       end
       puts line
       i +=1
@@ -32,7 +44,7 @@ class Store
   end
 
   def on_sale(percent)
-    @items.each {|item| item[:price] = item[:price] * (1 - percent); item[:sale] = percent.round(2)}
+    @items.each {|item| item.price = item.price * (1 - percent); item.sale = percent.round(2)}
   end
 end
 
@@ -60,18 +72,3 @@ end
 store.on_sale(num)
 store.display
 
-
-
-
-
-
-
-
-
-
-# Bonus: Read more about Ruby array and hash methods. Explore using different methods in your code.
-# https://ruby-doc.org/core/Array.html
-# https://ruby-doc.org/core/Hash.html
-# https://ruby-doc.org/core/Symbol.html
-# Bonus:
-# Try to represent the same store items using a class!
