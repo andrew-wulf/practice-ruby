@@ -10,13 +10,19 @@
 # b) Create an instance from your store item class. Use puts statements to print the 3 attributes individually to the terminal.
 # c) Use the attr_writer method to change a value
 
+#Rewrite your store items using a class with a single options hash in the initialize method.
+
 
 class Item
   attr_writer :price, :sale, :color
   attr_reader :name, :price, :color, :sale
 
-  def initialize(name, color, price, sale: 0)
-    @name, @price, @color, @sale = name, price, color, sale
+  def initialize(attributes)
+    @name, @price, @color, @sale = attributes[:name], attributes[:price],attributes[:color], attributes[:sale]
+    
+    if @sale == nil
+      @sale = 0
+    end
   end
 end
 
@@ -28,7 +34,7 @@ class Store
   end
 
   def add(item)
-    @items.push(Item.new(*item.values))
+    @items.push(Item.new(item))
   end
 
   def display
@@ -40,6 +46,7 @@ class Store
       if item.sale > 0
         price = price * (1 - (item.sale.to_f / 100))
       end
+      
 
       line = "#{i} | #{item.name} (#{item.color}) -- $#{price.round(2)}"
       if item.sale > 0
