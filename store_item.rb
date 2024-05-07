@@ -12,7 +12,7 @@
 
 
 class Item
-  attr_writer :price, :sale
+  attr_writer :price, :sale, :color
   attr_reader :name, :price, :color, :sale
 
   def initialize(name, color, price, sale: 0)
@@ -22,6 +22,7 @@ end
 
 
 class Store
+  attr_reader :items
   def initialize
     @items = []
   end
@@ -33,10 +34,16 @@ class Store
   def display
     puts "Items:"
     i = 1
+    
     for item in @items
-      line = "#{i} | #{item.name} (#{item.color}) -- $#{item.price.round(2)}"
+      price = item.price
       if item.sale > 0
-        line += " (#{(item.sale * 100).to_i}% off!)"
+        price = price * (1 - (item.sale.to_f / 100))
+      end
+
+      line = "#{i} | #{item.name} (#{item.color}) -- $#{price.round(2)}"
+      if item.sale > 0
+        line += " (#{item.sale}% off!)"
       end
       puts line
       i +=1
@@ -44,7 +51,11 @@ class Store
   end
 
   def on_sale(percent)
-    @items.each {|item| item.price = item.price * (1 - percent); item.sale = percent.round(2)}
+    @items.each {|item| item.sale = percent.round(2)}
+  end
+
+  def change_color(index, color)
+    @items[index].color = color
   end
 end
 
@@ -59,16 +70,45 @@ for item in [item1, item2, item3]
 end
 
 
+#----- Interactive demo below -----
+
 puts "Welcome to my store!"
 store.display
 
-puts "enter a percent for our fire sale!"
+puts "commands: sale, color, exit"
 while true
-  num = gets.chomp.to_f
-  if num > 0 && num < 1
+  comm = gets.chomp
+
+  if comm == "exit"
     break
+
+  elsif comm == "sale"
+    puts "enter a percent for our fire sale! (0 to 99)"
+    while true
+      num = gets.chomp.to_i
+      if num >= 0 && num <= 99
+        store.on_sale(num)
+        store.display
+        break
+      end
+    end
+
+  elsif comm == "color"
+    puts "enter item index."
+    while true
+      i = gets.chomp.to_i - 1
+      if i > -1 && i < store.items.length
+        break
+      end
+    end
+
+    puts "enter a new color."
+    color = gets.chomp
+   
+    store.change_color(i, color)
+    puts "Item updated!"
+    store.display
   end
 end
-store.on_sale(num)
-store.display
+
 
