@@ -5,6 +5,7 @@
 
 
 class Vehicle
+  attr_reader :direction
   def initialize
     @speed = 0
     @direction = 'north'
@@ -22,6 +23,10 @@ end
 
 
 class Car < Vehicle
+  def initialize
+    super
+    @speed = 10
+  end
   def honk_horn
     puts "Beeeeeeep!"
   end
@@ -38,6 +43,10 @@ bike, car = Bike.new, Car.new
 
 bike.accelerate
 car.accelerate
+
+pp bike.direction
+pp car.direction
+
 bike.turn('east')
 car.turn('west')
 
